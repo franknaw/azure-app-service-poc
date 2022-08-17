@@ -14,7 +14,12 @@ variable "plan_sku_name" {
 }
 
 variable "web_app_name" {
-  description = "Base web app name"
+  description = "Base app name"
+  type        = string
+}
+
+variable "function_app_name" {
+  description = "Base app name"
   type        = string
 }
 

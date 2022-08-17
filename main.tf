@@ -111,3 +111,15 @@ module "web_app" {
   branch_slot_1       = var.branch_slot_1
 }
 
+module "app_function" {
+  source = "git::https://github.com/franknaw/azure-simple-app-service-function"
+
+  location            = module.resource_group.rg.location
+  resource_group_name = module.resource_group.rg.name
+  product_name        = module.metadata.names.product_name
+  tags                = module.metadata.tags
+  plan_os_type        = var.plan_os_type
+  plan_sku_name       = var.plan_sku_name
+  app_name            = var.function_app_name
+  slot_1_name         = var.slot_1_name
+}
