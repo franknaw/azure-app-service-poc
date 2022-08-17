@@ -2,6 +2,7 @@
 
 This POC uses the following App Service Modules.
 * [Web App Module](https://github.com/franknaw/azure-simple-app-service-web-app)
+* [Function App Module](https://github.com/franknaw/azure-simple-app-service-function)
 
 
 ***
