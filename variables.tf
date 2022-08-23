@@ -48,3 +48,8 @@ variable "branch_slot_1" {
   description = "Slot One Branch"
   type        = string
 }
+
+variable "app_type" {
+  description = "App type of web or function"
+  type        = string
+}

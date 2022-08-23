@@ -11,7 +11,6 @@ provider "azurerm" {
   features {}
 }
 
-
 data "azurerm_subscription" "current" {
 }
 
@@ -95,6 +94,7 @@ module "vnet" {
 Windows/Linux Web App Service
 */
 module "web_app" {
+#  count                  = var.app_type != "Function" ? 1 : 0
   source = "git::https://github.com/franknaw/azure-simple-app-service-web-app.git?ref=v0.0.1"
 
   location            = module.resource_group.rg.location
@@ -112,7 +112,9 @@ module "web_app" {
 }
 
 module "app_function" {
-  source = "git::https://github.com/franknaw/azure-simple-app-service-function"
+#  count                  = var.app_type == "Function" ? 1 : 0
+#  source = "git::https://github.com/franknaw/azure-simple-app-service-function"
+  source = "../azure-simple-app-service-function"
 
   location            = module.resource_group.rg.location
   resource_group_name = module.resource_group.rg.name
