@@ -13,11 +13,6 @@ variable "plan_sku_name" {
   type        = string
 }
 
-variable "web_app_name" {
-  description = "Base app name"
-  type        = string
-}
-
 variable "function_app_name" {
   description = "Base app name"
   type        = string
@@ -49,7 +44,27 @@ variable "branch_slot_1" {
   type        = string
 }
 
-variable "app_type" {
-  description = "App type of web or function"
+variable "resource_group_type" {
+  description = "Service plan SKU name"
+  type        = string
+}
+
+variable "product_name" {
+  description = "Service plan SKU name"
+  type        = string
+}
+
+variable "environment" {
+  description = "Service plan SKU name"
+  type        = string
+}
+
+variable "service_plan_name_prefix" {
+  description = "Service plan name"
+  type        = string
+}
+
+variable "web_app_name" {
+  description = "Base app name"
   type        = string
 }

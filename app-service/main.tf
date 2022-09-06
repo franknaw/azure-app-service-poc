@@ -52,14 +52,15 @@ module "metadata" {
   market              = "us"
   project             = "https://github.com/franknaw/azure-simple-app-service"
   location            = var.location
-  environment         = "sandbox"
-  product_name        = "appservice1"
+  environment         = var.environment
+  product_name        = var.product_name
   business_unit       = "infra"
   product_group       = "fnaw"
   subscription_id     = module.subscription.output.subscription_id
   subscription_type   = "dev"
-  resource_group_type = "app"
+  resource_group_type = var.resource_group_type
 }
+
 
 /*
 Azure Resource Group Module.
@@ -91,37 +92,58 @@ module "vnet" {
 }
 
 /*
-Windows/Linux Web App Service
+Create App Service Environment (ASE)
+  An ASE is a single-tenant deployment of Azure App Service that runs on your virtual network.
+  Applications are hosted in App Service plans, which are created in an App Service Environment.
+  An ASE is essentially a provisioning profile for an application host
+  See: https://docs.microsoft.com/en-us/azure/app-service/environment/overview
+  See: https://docs.microsoft.com/en-us/azure/app-service/environment/using-an-ase
 */
-module "web_app" {
-#  count                  = var.app_type != "Function" ? 1 : 0
-  source = "git::https://github.com/franknaw/azure-simple-app-service-web-app.git?ref=v0.0.1"
+//resource "azurerm_app_service_environment" "ase" {
+//  name                         = "franknawase"
+//  resource_group_name          = module.resource_group.rg.name
+//  subnet_id                    = module.vnet.subnet_public.id
+//  pricing_tier                 = "I1"
+//  front_end_scale_factor       = 5
+//  internal_load_balancing_mode = "Web, Publishing"
+//  allowed_user_ip_cidrs        = ["172.111.4.104/32"]
+//
+//  cluster_setting {
+//    name  = "DisableTls1.0"
+//    value = "1"
+//  }
+//}
 
-  location            = module.resource_group.rg.location
-  resource_group_name = module.resource_group.rg.name
-  product_name        = module.metadata.names.product_name
-  tags                = module.metadata.tags
-  plan_os_type        = var.plan_os_type
-  plan_sku_name       = var.plan_sku_name
-  web_app_name        = var.web_app_name
-  slot_1_name         = var.slot_1_name
-  repo_url_slot_0     = var.repo_url_slot_0
-  branch_slot_0       = var.branch_slot_0
-  repo_url_slot_1     = var.repo_url_slot_1
-  branch_slot_1       = var.branch_slot_1
+/*
+Create an app service plan.
+  An App Service plan defines a set of compute resources for a web app to run.
+  These compute resources are analogous to the server farm in conventional web hosting.
+  One or more apps can be configured to run on the same computing resources (or in the same App Service plan).
+  See: https://docs.microsoft.com/en-us/azure/app-service/overview-hosting-plans
+*/
+resource "azurerm_service_plan" "web_sp" {
+  name                       = join("-", [var.service_plan_name_prefix, var.plan_os_type])
+  location                   = var.location
+  resource_group_name        = module.resource_group.rg.name
+  #app_service_environment_id = azurerm_app_service_environment.ase.id
+  os_type                    = var.plan_os_type
+  sku_name                   = var.plan_sku_name
+  tags = merge({
+    Name = "${module.metadata.names.product_name}-${var.plan_os_type}-service-plan",
+    },
+    module.metadata.tags
+  )
 }
 
-module "app_function" {
-#  count                  = var.app_type == "Function" ? 1 : 0
-#  source = "git::https://github.com/franknaw/azure-simple-app-service-function"
-  source = "../azure-simple-app-service-function"
-
-  location            = module.resource_group.rg.location
+resource "azurerm_service_plan" "function_sp" {
+  name                = "function-sp-${var.plan_os_type}"
+  location            = var.location
   resource_group_name = module.resource_group.rg.name
-  product_name        = module.metadata.names.product_name
-  tags                = module.metadata.tags
-  plan_os_type        = var.plan_os_type
-  plan_sku_name       = var.plan_sku_name
-  app_name            = var.function_app_name
-  slot_1_name         = var.slot_1_name
+  os_type             = var.plan_os_type
+  sku_name            = var.plan_sku_name
+  tags = merge({
+    Name = "${module.metadata.names.product_name}-${var.plan_os_type}-service-plan",
+    },
+    module.metadata.tags
+  )
 }
