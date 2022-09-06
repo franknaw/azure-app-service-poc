@@ -106,7 +106,7 @@ Create App Service Environment (ASE)
 //  pricing_tier                 = "I1"
 //  front_end_scale_factor       = 5
 //  internal_load_balancing_mode = "Web, Publishing"
-//  allowed_user_ip_cidrs        = ["172.111.4.104/32"]
+//  allowed_user_ip_cidrs        = ["your ip/32"]
 //
 //  cluster_setting {
 //    name  = "DisableTls1.0"
